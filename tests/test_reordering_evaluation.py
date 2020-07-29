@@ -1,7 +1,7 @@
 import pandas
 import pytest
 
-from CRM20_How_does_software_break.src.reordering_evaluation import ReorderingEvaluation
+from src.reordering_evaluation import ReorderingEvaluation
 
 
 @pytest.fixture()
