@@ -1,0 +1,54 @@
+from src.reordering_evaluation import ReorderingEvaluation
+
+import numpy as np
+import pandas as pd
+
+# TODO: This should handle test ids not in the trainset
+class ReorderingAnalyzer:
+    def __init__(self, orderers):
+        # This predictor should be in the analysis
+        self.orderers = orderers
+        
+        
+    def fit(self, X_train, y_train):
+        for orderer in self.orderers:
+            orderer.fit(X_train.copy(), y_train.copy())
+            
+    def predict(self, X_test):
+        self.predictions = []
+        self.X_test = X_test
+        for orderer in self.orderers:
+            self.predictions.append(orderer.predict(X_test.copy()))
+            
+    def evaluate(self, mutants_and_tests):
+        data = { 'apfd_avg': [], 'apfd_min': [], 'apfd_max': [], 'first_failing_duration_avg': [], 'last_failing_duration_avg': []}
+        m = mutants_and_tests.copy()
+        test_count = m.groupby('test_id').count().shape[0]
+        for ordering in self.predictions:
+            apfd = []
+            first_failing_duration = []
+            last_test_failing_duration = []
+            for row in ordering.itertuples():
+                if row.Index % 50 == 0:
+                    print('.', end='')
+                mutant_executions = m.loc[m['mutant_id'] == row.Index]
+                # Only execute the metrics if we have at least one failure
+                if mutant_executions['outcome'].values.all() == False:
+                    order = ordering.loc[row.Index].order
+                    if len(order) != test_count:
+                        print('Not a full ordering was specified, skipping...')
+                        continue
+                    r = ReorderingEvaluation(order, mutant_executions)
+                    apfd.append(r.APFD())
+                    first_failing_duration.append(r.first_failing_duration())
+                    last_test_failing_duration.append(r.last_test_failing_duration())
+                    #print(r.first_failing_duration())
+
+            print(' finished.')
+            data['apfd_avg'].append(np.mean(apfd))
+            data['apfd_min'].append(np.min(apfd))
+            data['apfd_max'].append(np.max(apfd))
+            data['first_failing_duration_avg'].append(np.mean(first_failing_duration))
+            data['last_failing_duration_avg'].append(np.mean(last_test_failing_duration))
+        
+        return pd.DataFrame.from_records(data, index=list(map(lambda o: o.name(), self.orderers)))
