@@ -26,11 +26,14 @@ def good_ordering():
     return [2, 4, 5, 1, 3]
 
 
+
 def test_linear_ordering(linear_ordering, dataframe):
     r = ReorderingEvaluation(linear_ordering, dataframe)
     assert r.first_failing_duration() == 3
     assert r.last_test_failing_duration() == 15
+    # APFD and APFDc values were handly checked
     assert round(r.APFD(), 6) == round(0.36666666666, 6)
+    assert r.APFDc() == 0.5
 
 
 def test_reverse_ordering(reverse_ordering, dataframe):
@@ -44,4 +47,6 @@ def test_good_ordering(good_ordering, dataframe):
     r = ReorderingEvaluation(good_ordering, dataframe)
     assert r.first_failing_duration() == 2
     assert r.last_test_failing_duration() == 11
+    # APFD and APFDc values were handly checked
     assert round(r.APFD(), 6) == round(0.7, 6)
+    assert r.APFDc() == 0.7
