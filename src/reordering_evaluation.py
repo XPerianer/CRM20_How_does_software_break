@@ -1,6 +1,9 @@
 from typing import List
 from pandas import DataFrame
 
+import pandas as pd
+import numpy as np
+
 
 class ReorderingEvaluation:
     def __init__(self, ordering: List[int], dataframe: DataFrame):
@@ -42,17 +45,20 @@ class ReorderingEvaluation:
     ### it is easier to calculate
     # TODO: How to format these nice docstrings?
     def APFD(self):
-        # We first find the positions of failing tests in the given order
-        summed_positions = 0.0
-        for row in self.dataframe.loc[self.dataframe['outcome'] == False].itertuples(index=False):
-            test_id = row.test_id
-            index = self.ordering.index(test_id) + 1 # + 1 since this should not be 0 indexed
-            summed_positions += index
-
-        # This is just the formulat from the literature
-        number_of_failed_tests = self.dataframe.loc[self.dataframe['outcome'] == False].shape[0]
         number_of_tests = len(self.ordering)
-        return 1.0 + 1.0 / (2 * number_of_tests) - summed_positions / (number_of_tests * number_of_failed_tests)
+        number_of_failed_tests = self.dataframe.loc[self.dataframe['outcome'] == False].shape[0]
+
+        number_encoded_test_outcomes = [0] # We always start at the beginning with 0 known failures and 0 executed tests
+        for test_id in self.ordering:
+            number_encoded_test_outcomes.append(not self.dataframe.loc[self.dataframe['test_id'] == test_id, 'outcome'].values[0])
+
+        summed_number_encoded_test_outcome = np.cumsum(number_encoded_test_outcomes) * 1 / number_of_failed_tests
+
+        return np.trapz(summed_number_encoded_test_outcome, np.linspace(0, 1, num=(number_of_tests + 1)))
+
+    def APFDc(self):
+        sum = 0.0
+
 
 
 
