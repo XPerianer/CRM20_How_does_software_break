@@ -50,3 +50,7 @@ def test_good_ordering(good_ordering, dataframe):
     # APFD and APFDc values were handly checked
     assert round(r.APFD(), 6) == round(0.7, 6)
     assert r.APFDc() == 0.7
+
+def test_dict_return(linear_ordering, dataframe):
+    r = ReorderingEvaluation(linear_ordering, dataframe)
+    assert r.to_dict() == {'first_failing_duration': 3, 'last_failing_duration': 15, 'APFD': 0.3666666666666666, 'APFDc': 0.5}

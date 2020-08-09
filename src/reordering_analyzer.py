@@ -35,11 +35,7 @@ class ReorderingAnalyzer:
                         continue
                     r = ReorderingEvaluation(order, mutant_executions)
                     data.update({(self.orderers[i].name, row.Index):
-                                     {'APFD': r.APFD(),
-                                      'APFDc': r.APFDc(),
-                                      'first_failing_duration': r.first_failing_duration(),
-                                      'last_failing_duration': r.last_test_failing_duration()
-                                      }
+                                     ReorderingEvaluation(order, mutant_executions).to_dict()
                                  })
 
             print(' finished.')
