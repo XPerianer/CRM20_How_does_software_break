@@ -1,8 +1,7 @@
 from typing import List
-from pandas import DataFrame
 
-import pandas as pd
 import numpy as np
+from pandas import DataFrame
 
 
 class ReorderingEvaluation:
@@ -12,6 +11,13 @@ class ReorderingEvaluation:
         self.dataframe = dataframe
         self.number_of_failed_tests = self.dataframe.loc[self.dataframe['outcome'] == False].shape[0]
         # TODO: assert that ordering and dataframe are kind of legit
+
+    def to_dict(self):
+        return {'APFD': self.APFD(),
+                'APFDc': self.APFDc(),
+                'first_failing_duration': self.first_failing_duration(),
+                'last_failing_duration': self.last_test_failing_duration()
+                }
 
     def first_failing_duration(self):
         summed_duration = 0
@@ -23,7 +29,6 @@ class ReorderingEvaluation:
             if rows['outcome'].iloc[0] == False:
                 return summed_duration
         return summed_duration
-
 
     def last_test_failing_duration(self):
         summed_duration = 0
@@ -47,27 +52,27 @@ class ReorderingEvaluation:
     ### it is easier to calculate
     # TODO: How to format these nice docstrings?
     def APFD(self):
-        number_encoded_test_outcomes = [0] # We always start at the beginning with 0 known failures and 0 executed tests
+        number_encoded_test_outcomes = [
+            0]  # We always start at the beginning with 0 known failures and 0 executed tests
         for test_id in self.ordering:
-            number_encoded_test_outcomes.append(not self.dataframe.loc[self.dataframe['test_id'] == test_id, 'outcome'].values[0])
+            number_encoded_test_outcomes.append(
+                not self.dataframe.loc[self.dataframe['test_id'] == test_id, 'outcome'].values[0])
 
         summed_number_encoded_test_outcome = np.cumsum(number_encoded_test_outcomes) * 1 / self.number_of_failed_tests
 
         return np.trapz(summed_number_encoded_test_outcome, np.linspace(0, 1, num=(self.number_of_tests + 1)))
 
     def APFDc(self):
-        number_encoded_test_outcomes = [0] # We always start at the beginning with 0 known failures and 0 executed tests
+        number_encoded_test_outcomes = [
+            0]  # We always start at the beginning with 0 known failures and 0 executed tests
         durations_test_outcomes = [0]
         for test_id in self.ordering:
-            number_encoded_test_outcomes.append(not self.dataframe.loc[self.dataframe['test_id'] == test_id, 'outcome'].values[0])
-            durations_test_outcomes.append(self.dataframe.loc[self.dataframe['test_id'] == test_id, 'duration'].values[0])
+            number_encoded_test_outcomes.append(
+                not self.dataframe.loc[self.dataframe['test_id'] == test_id, 'outcome'].values[0])
+            durations_test_outcomes.append(
+                self.dataframe.loc[self.dataframe['test_id'] == test_id, 'duration'].values[0])
 
         summed_number_encoded_test_outcome = np.cumsum(number_encoded_test_outcomes) * 1 / self.number_of_failed_tests
         summed_durations_test_outcomes = np.cumsum(durations_test_outcomes) * 1 / np.sum(durations_test_outcomes)
 
         return np.trapz(summed_number_encoded_test_outcome, summed_durations_test_outcomes)
-
-
-
-
-
