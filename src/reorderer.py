@@ -54,7 +54,29 @@ class AverageReorderer(Reorderer):
         for row in orderings.itertuples():
             orderings.at[row.Index, 'order'] = self.ordering
         return orderings
-       
+    
+    
+# https://dl.acm.org/doi/pdf/10.1145/3395363.3397383
+# Query the fastest tests first
+class QTF(Reorderer):
+    def name(self):
+        return "QTF"
+    def fit(self, X_train, y_train):
+        # Calculate the average duration of the job
+        X_train = X_train.copy()
+        sorted_test_ids = X_train.groupby(['test_id'])['duration'].mean().sort_values(ascending=True)
+        # This is directly how we want our permutation to be:
+        self.ordering = list(sorted_test_ids.index)
+        
+        
+    def predict(self, X_test):
+        orderings = X_test.groupby('mutant_id').count()
+        orderings['order'] = None
+        orderings['order'] = orderings['order'].astype('object')
+        for row in orderings.itertuples():
+            orderings.at[row.Index, 'order'] = self.ordering
+        return orderings
+        
         
 
         
