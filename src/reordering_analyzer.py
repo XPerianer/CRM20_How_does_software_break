@@ -7,6 +7,7 @@ class ReorderingAnalyzer:
     def __init__(self, orderers):
         # This predictor should be in the analysis
         self.orderers = orderers
+        self.raw_data = {}
 
     def fit(self, X_train, y_train):
         for orderer in self.orderers:
@@ -36,8 +37,18 @@ class ReorderingAnalyzer:
                     r = ReorderingEvaluation(order, mutant_executions)
                     data.update({(self.orderers[i].name, row.Index):
                                      ReorderingEvaluation(order, mutant_executions).to_dict()
+
                                  })
 
             print(' finished.')
+        self.raw_data = data
 
         return pd.DataFrame(data)
+    
+    def boxplot(self):
+        evaluation_data = pd.DataFrame(self.raw_data)
+        orderers_count = len(self.orderers)
+        x_size = orderers_count * 5
+        y_size = 10
+        evaluation_data.transpose().groupby(level=0).boxplot(column = ['APFD', 'APFDc'], figsize=(x_size, y_size), layout=(1,orderers_count))
+        evaluation_data.transpose().groupby(level=0).boxplot(column = ['first_failing_duration', 'last_failing_duration'], figsize=(x_size, y_size), layout=(1,orderers_count))

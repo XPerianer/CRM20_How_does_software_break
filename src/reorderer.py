@@ -132,15 +132,19 @@ class OrdinalPredictionReorderer(Reorderer):
         orderings = X_test.groupby('mutant_id').count()
         orderings['order'] = None
         orderings['order'] = orderings['order'].astype('object')
-        self.prediction = self.predictor.predict(X_test)
+        
+        index_of_false_class = list(self.predictor.classes_).index(False)
+        self.prediction = self.predictor.predict_proba(X_test)[:, index_of_false_class]
         X_test['outcome_prediction'] = self.prediction
         for row in orderings.itertuples():
             predictions_for_mutant = X_test.loc[X_test['mutant_id'] == row.Index]
             # print(predictions_for_mutant.loc[predictions_for_mutant['outcome_prediction'] == False]['test_id'])
-            predictions_for_mutant.sort(['outcome_prediction'], ascending=False)
-            orderring = list(predictions_for_mutant.Index)
+            sorted_test_ids = predictions_for_mutant.sort_values(by=['outcome_prediction'], ascending=False)['test_id']
+            #print(sorted_test_ids)
+            orderring = list(sorted_test_ids)
             # print(len(orderring))
             orderings.at[row.Index, 'order'] = orderring
+            #print(orderring)
             # print(list(fail_predictions.append(success_predictions)))
         return orderings
 
