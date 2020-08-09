@@ -1,7 +1,5 @@
-from src.reordering_evaluation import ReorderingEvaluation
-
-import numpy as np
 import pandas as pd
+from src.reordering_evaluation import ReorderingEvaluation
 
 
 # TODO: This should handle test ids not in the trainset
@@ -25,8 +23,6 @@ class ReorderingAnalyzer:
         test_count = m.groupby('test_id').count().shape[0]
         data = {}
         for i, ordering in enumerate(self.predictions):
-            first_failing_duration = []
-            last_test_failing_duration = []
             for row in ordering.itertuples():
                 if row.Index % 50 == 0:
                     print('.', end='')
@@ -39,9 +35,13 @@ class ReorderingAnalyzer:
                         continue
                     r = ReorderingEvaluation(order, mutant_executions)
                     data.update({(self.orderers[i].name, row.Index):
-                                     (r.APFD(), r.APFDc(), r.first_failing_duration(), r.last_test_failing_duration())
+                                     {'APFD': r.APFD(),
+                                      'APFDc': r.APFDc(),
+                                      'first_failing_duration': r.first_failing_duration(),
+                                      'last_failing_duration': r.last_test_failing_duration()
+                                      }
                                  })
 
             print(' finished.')
 
-        return pd.DataFrame(data, columns=['APFD', 'APFDc', 'first_failing_dur', 'last_failing_dur'])
+        return pd.DataFrame(data)
