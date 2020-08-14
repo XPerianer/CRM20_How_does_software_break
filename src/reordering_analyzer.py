@@ -35,7 +35,7 @@ class ReorderingAnalyzer:
                         print('Not a full ordering was specified, skipping...')
                         continue
                     r = ReorderingEvaluation(order, mutant_executions)
-                    data.update({(self.orderers[i].name, row.Index):
+                    data.update({(self.orderers[i].name(), row.Index):
                                      ReorderingEvaluation(order, mutant_executions).to_dict()
 
                                  })
