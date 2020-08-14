@@ -8,7 +8,7 @@ def load_dataset(filename, sparsify=False):
     mutants_and_tests["outcome"]
     #display(mutants_and_tests)
     if sparsify:
-        keep_fraction = 0.1 # Keep 10% of the dataset (roughly, since we delete tests and mutants smaller than that)
+        keep_fraction = 0.2 # Keep 20% of the dataset (roughly, since we delete tests and mutants smaller than that)
         max_mutant_id = mutants_and_tests['mutant_id'].max()
         max_test_id = mutants_and_tests['test_id'].max()
         return mutants_and_tests.loc[mutants_and_tests['test_id'] < max_test_id * keep_fraction].loc[mutants_and_tests['mutant_id'] < max_mutant_id * keep_fraction]

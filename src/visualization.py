@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
+import numpy as np
 
 def plot_covariance_matrix(name, mutants_and_tests):
     pivot = mutants_and_tests.set_index('mutant_id').pivot(columns='test_id', values='outcome')
@@ -83,8 +84,20 @@ def plot_confusion_matrix(name, trained_predictor, X_test, y_test):
     fig, ax = plt.subplots()
     fig.tight_layout()
     cm = confusion_matrix(y_test, trained_predictor.predict(X_test), normalize='all')
-    ax = plt.axes()
     cm_display = ConfusionMatrixDisplay(cm, display_labels=['False', 'True']).plot(ax=ax)
     plt.title(name)
-    plt.show()
+    
+    
+# Plot the impurity-based feature importances of a random forest
+def plot_feature_importances(name, forest, test_train_data):
+    X_train, y_train, X_test, y_test = test_train_data[name]
+    plt.figure()
+    plt.title(name + ": Feature importances")
+    importances = forest.feature_importances_
+    indices = np.argsort(importances)[::-1]
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+                 axis=0)
+    plt.barh(range(X_test.shape[1]), importances[indices],
+            color="blue", xerr=std[indices], align="center")
+    plt.yticks(range(X_test.shape[1]), X_test.columns)
     plt.show()
