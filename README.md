@@ -12,4 +12,4 @@ I recommend to create a virtual environment beforehand.
 
 The mutation testing datasets were generated with [Mutester](https://github.com/XPerianer/CRM2020), a tool I developed to simplify generation of mutation testing data.
 
-A good starting point is the [Jupyter Notebook](./How_does_software_break.ipynb). There you finde a walkthrough of the different aspects that were highlighted during the seminar.
+A good starting point is the [Jupyter Notebook](./How_Does_Software_Break.ipynb). There you finde a walkthrough of the different aspects that were highlighted during the seminar.
