@@ -1,6 +1,16 @@
 import matplotlib.pyplot as plt
 from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 
+def plot_covariance_matrix(name, mutants_and_tests):
+    pivot = mutants_and_tests.set_index('mutant_id').pivot(columns='test_id', values='outcome')
+    pivot = pivot.astype('bool')
+    fig, ax = plt.subplots(figsize=(18,18))
+    ax.matshow(pivot.cov(), cmap=plt.get_cmap('binary'))
+    #plt.axis('off')
+    plt.title(name)
+    plt.show()
 
 def plot_failure_histogram(name, mutants_and_tests):
     failures = mutants_and_tests[mutants_and_tests['outcome'] == False]
@@ -13,6 +23,18 @@ def plot_failure_histogram(name, mutants_and_tests):
     plt.ylabel('failures')
     plt.title(name)
     plt.show()
+    
+def plot_failures_vs_duration(name, mutants_and_tests):
+    failures = mutants_and_tests[mutants_and_tests['outcome'] == False]
+    fails_per_test_id = failures.groupby(['test_id']).count()['outcome']
+    average_duration_per_test_id = failures.groupby(['test_id']).mean()['duration']
+    
+    plt.scatter(average_duration_per_test_id, fails_per_test_id)
+    plt.title(name)
+    plt.xlabel('Average Duration')
+    plt.ylabel('Failures')
+    plt.show()
+    
 
 def plot_hierarchical_failures(name, mutants_and_tests, arrows=True):
     failures = mutants_and_tests[mutants_and_tests['outcome'] == False]
@@ -60,21 +82,9 @@ def plot_edit_distance_roc_curve(datasets):
 def plot_confusion_matrix(name, trained_predictor, X_test, y_test):
     fig, ax = plt.subplots()
     fig.tight_layout()
-    
-    matrix = confusion_matrix(y_test, trained_predictor.predict(X_test), normalize='true')
-    im = ax.imshow(matrix, cmap="YlGn")
-    ax.set_xticks(range(2))
-    ax.set_yticks(range(2))
-
-    ax.set_xticklabels(['Predicted True', 'Predicted False'])
-    ax.set_yticklabels(['True True', 'True False'])
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-             rotation_mode="anchor")
-    ax.set_title(name)
-    # Loop over data dimensions and create text annotations.
-    for i in range(2):
-        for j in range(2):
-            text = ax.text(j, i, round(matrix[i, j], 2),
-                           ha="center", va="center", color="b")
-
+    cm = confusion_matrix(y_test, trained_predictor.predict(X_test), normalize='all')
+    ax = plt.axes()
+    cm_display = ConfusionMatrixDisplay(cm, display_labels=['False', 'True']).plot(ax=ax)
+    plt.title(name)
+    plt.show()
     plt.show()
