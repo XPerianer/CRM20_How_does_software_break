@@ -24,6 +24,7 @@ class ReorderingAnalyzer:
         test_count = m.groupby('test_id').count().shape[0]
         data = {}
         for i, ordering in enumerate(self.predictions):
+            print('Starting evaluation ', end='')
             for row in ordering.itertuples():
                 if row.Index % 50 == 0:
                     print('.', end='')
@@ -52,3 +53,4 @@ class ReorderingAnalyzer:
         y_size = 10
         evaluation_data.transpose().groupby(level=0).boxplot(column = ['APFD', 'APFDc'], figsize=(x_size, y_size), layout=(1,orderers_count))
         evaluation_data.transpose().groupby(level=0).boxplot(column = ['first_failing_duration', 'last_failing_duration'], figsize=(x_size, y_size), layout=(1,orderers_count))
+        

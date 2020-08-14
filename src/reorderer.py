@@ -61,13 +61,17 @@ class AverageReorderer(Reorderer):
     
 # https://dl.acm.org/doi/pdf/10.1145/3395363.3397383
 # Query the fastest tests first
+# Because X_train does not have to contain the duration (since in the real world scenario, you also would not now in advance, we spoil this in the constructor)
 class QTF(Reorderer):
+    
+    def __init__(self, test_ids_and_durations):
+        self.test_ids_and_durations = test_ids_and_durations
+    
     def name(self):
         return "QTF"
     def fit(self, X_train, y_train):
         # Calculate the average duration of the job
-        X_train = X_train.copy()
-        sorted_test_ids = X_train.groupby(['test_id'])['duration'].mean().sort_values(ascending=True)
+        sorted_test_ids = self.test_ids_and_durations.groupby(['test_id'])['duration'].mean().sort_values(ascending=True)
         # This is directly how we want our permutation to be:
         self.ordering = list(sorted_test_ids.index)
         
