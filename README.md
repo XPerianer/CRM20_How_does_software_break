@@ -6,7 +6,7 @@ It contains analysis code, and also documented analysis in the jupyter notebook.
 # Installation
 The requirements are documented in the `requirements.txt` file, so if you are using `pip`, you can call
 ```
-pip -r requirements.txt
+pip install -r requirements.txt
 ```
 I recommend to create a virtual environment beforehand.
 
