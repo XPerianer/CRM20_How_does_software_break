@@ -10,6 +10,12 @@ pip install -r requirements.txt
 ```
 I recommend to create a virtual environment beforehand.
 
-The mutation testing datasets were generated with [Mutester](https://github.com/XPerianer/CRM2020), a tool I developed to simplify generation of mutation testing data.
+# Structure
+The mutation testing datasets were generated with [Mutester](https://github.com/XPerianer/CRM2020), a tool I developed to simplify generation of mutation testing data. Four of these datasets are also available in the `data` folder via git lfs.
 
 A good starting point is the [Jupyter Notebook](./How_Does_Software_Break.ipynb). There you finde a walkthrough of the different aspects that were highlighted during the seminar.
+
+The Notebook makes heavy use of code imported from the `src` folder, that is partitioned in diverse helper modules.
+
+Especially the metric analysis code from the `src` folder is also tested (`test` folder).
+
