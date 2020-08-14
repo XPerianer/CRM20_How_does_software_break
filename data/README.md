@@ -9,3 +9,6 @@ python mutester/ repos/httpie/ repos/httpie/venv/ 1 1814 -v  --filename httpie_f
 
 Do not wonder, I reused the virtual environment of flask for the jinja calls as well, as their dependencies are very similar.
 
+Important to generate own datasets with mutester is to install a virtual environment that has all necessary dependencies installed, and also a slightly modified version of mutester.
+
+You can find details in this [Dockerfile](https://github.com/XPerianer/CRM2020/blob/master/Dockerfile) from the other repo. That contains the calls needed to generate the flask dataset. Besides slight differences in installing the test dependencies, the other projects work the same.
