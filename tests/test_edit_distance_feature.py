@@ -2,7 +2,7 @@ import pandas
 
 import pytest
 
-from src.edit_distance_feature import edit_distance_feature
+from src.preprocessing import edit_distance_feature
 
 
 @pytest.fixture()
