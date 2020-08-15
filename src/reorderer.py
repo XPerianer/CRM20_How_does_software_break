@@ -85,10 +85,13 @@ class QTF(Reorderer):
         return orderings
 
 
-# This is magic: It will first predict using a binary predictor, and then put the tests in front that you said are gonna fail.
-# TODO: It will even help you more: it will sort your predicted failures after duration, so that you get short durations for the first test failing
-# TODO: It should probably also weight the predicted not failing tests after the average
+# TODO: Sort the predicted failures after duration, such that short tests get executed first.
+# TODO: It should probably also weight the predicted not failing tests after the average, to perform well if only few failures are predicted
 class BinaryPredictionReorderer(Reorderer):
+    """BinaryPredictionReorderer can convert a prediction of true/false for each test case into an order of tests.
+    Therefore it will first predict, and then put the tests in front that were predicted failing."""
+    
+    
     def __init__(self, predictor):
         # This predictor should be in the 
         self.predictor = predictor
@@ -121,8 +124,13 @@ class BinaryPredictionReorderer(Reorderer):
 
 
 class OrdinalPredictionReorderer(Reorderer):
+    """OrdinalPredictionReorderer can convert a prediction of failure probability in [0, 1] for each test case into an order of tests.
+    Therefore it will first predict, and then put the tests in front that were predicted most likely to be failing.
+    
+    Similar to BinaryPredictionReorderer, but can make finer decisions if the model can give out probabilities of failure.
+    """
+    
     def __init__(self, predictor):
-        # This predictor should be in the
         self.predictor = predictor
 
     def name(self):
@@ -142,13 +150,8 @@ class OrdinalPredictionReorderer(Reorderer):
         X_test['outcome_prediction'] = self.prediction
         for row in orderings.itertuples():
             predictions_for_mutant = X_test.loc[X_test['mutant_id'] == row.Index]
-            # print(predictions_for_mutant.loc[predictions_for_mutant['outcome_prediction'] == False]['test_id'])
             sorted_test_ids = predictions_for_mutant.sort_values(by=['outcome_prediction'], ascending=False)['test_id']
-            #print(sorted_test_ids)
             orderring = list(sorted_test_ids)
-            # print(len(orderring))
             orderings.at[row.Index, 'order'] = orderring
-            #print(orderring)
-            # print(list(fail_predictions.append(success_predictions)))
         return orderings
 

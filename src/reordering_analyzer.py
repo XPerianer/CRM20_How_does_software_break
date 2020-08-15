@@ -2,10 +2,13 @@ import pandas as pd
 from src.reordering_evaluation import ReorderingEvaluation
 
 
-# TODO: This should handle test ids not in the trainset
+# TODO: This should gracefully handle test ids not in the trainset. The Predictor can then not know that such a test case exists, and won't have it in the order.
 class ReorderingAnalyzer:
+    """This can be used to compare the reordering performance of different given orderers.
+    Since steps can take very long, after each step outcomes are safed in the member variables `predictions`, `orderers`, and `raw_data`.
+    """
+    
     def __init__(self, orderers):
-        # This predictor should be in the analysis
         self.orderers = orderers
         self.raw_data = {}
 

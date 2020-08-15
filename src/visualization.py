@@ -43,8 +43,6 @@ def plot_hierarchical_failures(name, mutants_and_tests, arrows=True):
     
     y = fails_per_test_id
     x = failures.reset_index().groupby(['test_id']).mean()['mutant_id']
-    #display(x)
-    #display(y)
     
     fig, ax = plt.subplots(1,1,figsize=(10,10))
     ax.set_xlim(mutants_and_tests['mutant_id'].min(), mutants_and_tests['mutant_id'].max())
@@ -54,16 +52,11 @@ def plot_hierarchical_failures(name, mutants_and_tests, arrows=True):
     if(arrows):
         i = 0
         for test_failure in failures.reset_index().itertuples():
-            #print(test_failure)
-            x_start = test_failure.mutant_id # mutant_id
+            x_start = test_failure.mutant_id
             y_start = 0
             test_id = test_failure.test_id
             x_end = x[test_id]
             y_end = y[test_id]
-            #print(x_start)
-            #print(y_start)
-            #print(x_end)
-            #print(y_end)
             ax.annotate("", xy=(x_end, y_end), xytext=(x_start, y_start), arrowprops={'arrowstyle': '-', 'color': '#A0A0A005'})
             
     plt.title(name)
@@ -78,18 +71,22 @@ def plot_edit_distance_roc_curve(datasets):
     plt.title("ROC Curve for edit_distance feature")
     plt.show()
 
-# This plots a confusion matrix for an already trained predictor (it will just call predictor.predict(X_test), not predictor.fit(...))
-# This can be used to check wether the given predictor performs well
+
 def plot_confusion_matrix(name, trained_predictor, X_test, y_test):
+    """This plots a confusion matrix for an already trained predictor (it will just call predictor.predict(X_test), not predictor.fit(...))
+       This can be used to check wether the given predictor performs well"""
+    
     fig, ax = plt.subplots()
     fig.tight_layout()
     cm = confusion_matrix(y_test, trained_predictor.predict(X_test), normalize='all')
     cm_display = ConfusionMatrixDisplay(cm, display_labels=['False', 'True']).plot(ax=ax)
     plt.title(name)
     
-    
-# Plot the impurity-based feature importances of a random forest
+
 def plot_feature_importances(name, forest, test_train_data):
+    """Plot the impurity-based feature importances of a random forest"""
+    
+    
     X_train, y_train, X_test, y_test = test_train_data[name]
     plt.figure()
     plt.title(name + ": Feature importances")

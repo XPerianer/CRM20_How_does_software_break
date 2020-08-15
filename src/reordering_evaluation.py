@@ -45,13 +45,14 @@ class ReorderingEvaluation:
 
         return summed_duration
 
-    ### Calculates the widespread used Average Percentage of Faults detected metric
-    ### We have the simplification here, that we say that each test failure is a defect,
-    ### anc vice versa, so the number of failed tests is the number of faults
-    ### While this is not realisitic, as probably some integration tests test the same as others,
-    ### it is easier to calculate
-    # TODO: How to format these nice docstrings?
+
     def APFD(self):
+        """Calculates the widespread used Average Percentage of Faults detected metric
+        We have the simplification here, that we say that each test failure is a defect,
+        anc vice versa, so the number of failed tests is the number of faults
+        While this is not realisitic, as probably some integration tests test the same as others, it is easier to calculate
+        """
+        
         number_encoded_test_outcomes = [
             0]  # We always start at the beginning with 0 known failures and 0 executed tests
         for test_id in self.ordering:
@@ -63,6 +64,8 @@ class ReorderingEvaluation:
         return np.trapz(summed_number_encoded_test_outcome, np.linspace(0, 1, num=(self.number_of_tests + 1)))
 
     def APFDc(self):
+        """Similar to APFD, but takes the average duration of the tests into account"""
+        
         number_encoded_test_outcomes = [
             0]  # We always start at the beginning with 0 known failures and 0 executed tests
         durations_test_outcomes = [0]

@@ -2,23 +2,25 @@ from abc import ABC, abstractmethod
 
 
 class Predictor(ABC):
+    """Abstract Base Class for Predictors"""
 
-    # Should output a concise name that makes it easy to identify
     @abstractmethod
     def name(self):
+        """Output a concise name that makes it easy to identify"""
         raise NotImplementedError
 
     @abstractmethod
     def fit(self, X_train, y_train):
         raise NotImplementedError
 
-    # Predict the outcome of the tests
     @abstractmethod
     def predict(self, X_test):
         raise NotImplementedError
         
 
 class NearestMutantPredictor(Predictor):
+    """Chooses the same test outcomes as the mutant with the smallest absolute difference in mutant_id"""
+    
     def name(self):
         return "NearestMutant"
     
